@@ -1,0 +1,13 @@
+pandas
+google-cloud-storage
+pydub
+numpy
+scipy
+docopt
+joblib
+psutil
+requests
+mutagen
+httplib2
+scikit-learn
+google-cloud-bigquery
