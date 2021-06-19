@@ -1,8 +1,8 @@
-/Users/m-kuida/myproject/cm_on_gcp/upload_trigger_cut_sound
+pwd
+/Users/XXX/myproject/cm_on_gcp/upload_trigger_cut_sound
 @upload_trigger_cut_sound
 
 bucket cm_sound_data
-
 
 gcloud functions deploy cut_cms \
 --runtime python37 \
@@ -11,7 +11,6 @@ gcloud functions deploy cut_cms \
 --trigger-event google.storage.object.finalize
 
 gcloud functions deploy cut_cms
-
 
 gsutil cp ../test_data/tmp.mp3 gs://cm_sound_data/original_data/tbs
 
