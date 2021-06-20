@@ -3,11 +3,13 @@ import pandas as pd
 from google.cloud import storage
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
+import datetime
 
 import audfprint
 import codecs
 
 from google.cloud import bigquery
+pklname = 'CM_bank-0618.pklz'
 
 
 def first_func(event, context):
@@ -32,6 +34,7 @@ def first_func(event, context):
         channel = "tbs"
         min_silence_len = 700
         thresh = -45
+
         print(file_name)
 
         # 本来ここに下のコード入れる
@@ -46,8 +49,26 @@ def first_func(event, context):
                 if line.find("Matched") >= 0:
                     # print(line)
                     id_ = line.split('.mp3')[1].split('/')[-1]
+                    d_split = file_name.split("_")
+
+                    dt = datetime.datetime(int(d_split[1]), int(d_split[2]), int(
+                        d_split[3]), int(d_split[4]), int(d_split[5].split(".mp3")[0]))
+
+                    timegap_ = datetime.timedelta(minutes=(
+                        600 - float(line.split("starting at ")[1].split(" s in")[0].split()[0])) // 60)
+                    actual_date = dt - timegap_
+
+                    date = d_split[1]+"-" + d_split[2]+"-" + d_split[3]
+                    time = str(actual_date.hour) + ":" + \
+                        str(actual_date.minute) + ":" + "00"
+
+                    channel = d_split[0]
+                    rank_ = int(line.split('rank ')[1])
+
                     rows_to_insert.append(
-                        {u"yid": id_, u"channel": channel, u"date": file_name})
+                        {u"id_": id_, u"date": date, u"time": time, u"channel": channel,
+                            u"rank_": rank_, u"datetime": date+" "+time, u"pklz": pklname}
+                    )
 
         # bqへStreamingInsert
         print(rows_to_insert)
@@ -55,7 +76,7 @@ def first_func(event, context):
             #            print(ans, channel, origina_file_name,)
 
             client = bigquery.Client(project='esoteric-helix-261205')
-            table_id = "cm_straming_sample.sample"
+            table_id = "cm_straming_sample.streaming_tbs"
             # rows_to_insert = [
             #    {u"yid": ans, u"channel": channel, u"date": origina_file_name}
             # ]
@@ -122,7 +143,7 @@ def first_func(event, context):
 
 def cm_match(tmp_main_file_name):
     outputfile = '/tmp/output.txt'
-    l = ['1', 'match', '--dbase', 'fpdbase15.pklz',
+    l = ['1', 'match', '--dbase', pklname,
          tmp_main_file_name,
          "--find-time-range", "--max-matches", "20", "--search-depth", "100", "--min-count", "20", '-o', outputfile]
 
