@@ -23,3 +23,10 @@ gsutil cp ../test_data/tbs_2021_05_25_23_54.mp3 gs://cm_sound_data/
 gsutil rm gs://cm_sound_data/tbs_2021_05_25_23_54.mp3
 
 gcloud functions logs read cut_cms
+
+#f15 ver
+gcloud functions deploy cut_cms_f15 \
+--runtime python37 \
+--entry-point first_func \
+--trigger-resource cm_sound_data \
+--trigger-event google.storage.object.finalize

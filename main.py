@@ -9,7 +9,7 @@ import audfprint
 import codecs
 
 from google.cloud import bigquery
-pklname = 'CM_bank-0618.pklz'
+pklname = 'fpdbase15.pklz'
 
 
 def first_func(event, context):
@@ -76,7 +76,7 @@ def first_func(event, context):
             #            print(ans, channel, origina_file_name,)
 
             client = bigquery.Client(project='esoteric-helix-261205')
-            table_id = "cm_straming_sample.streaming_tbs"
+            table_id = "cm_straming_sample.streaming_tbs_f15"
             # rows_to_insert = [
             #    {u"yid": ans, u"channel": channel, u"date": origina_file_name}
             # ]
