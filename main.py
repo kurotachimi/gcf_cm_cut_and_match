@@ -1,4 +1,3 @@
-
 import pandas as pd
 from google.cloud import storage
 from pydub import AudioSegment
@@ -9,29 +8,42 @@ import audfprint
 import codecs
 
 from google.cloud import bigquery
-pklname = 'fpdbase15.pklz'
+
+pklname = "fpdbase_all.pklz"
 
 
 def first_func(event, context):
-    file_name = event['name']
-    if file_name.endswith('.mp3'):
-        print('Event ID: {}'.format(context.event_id))
-        print('Event type: {}'.format(context.event_type))
-        print('Bucket: {}'.format(event['bucket']))
-        print('File: {}'.format(event['name']))
-        print('Metageneration: {}'.format(event['metageneration']))
-        print('Created: {}'.format(event['timeCreated']))
-        print('Updated: {}'.format(event['updated']))
+    file_name = event["name"]
+    if file_name.endswith(".mp3"):
+        print("Event ID: {}".format(context.event_id))
+        print("Event type: {}".format(context.event_type))
+        print("Bucket: {}".format(event["bucket"]))
+        print("File: {}".format(event["name"]))
+        print("Metageneration: {}".format(event["metageneration"]))
+        print("Created: {}".format(event["timeCreated"]))
+        print("Updated: {}".format(event["updated"]))
 
-        timedatabase = pd.DataFrame([], columns=['path', 'oldfilename', 'channel',
-                                                 'date', 'sec_type', 'hour', 'minutes', 'minutes_plus', 'newfilename'])
-        bucket = event['bucket']
-        file_name = event['name']
-        tmp_main_file_name = '/tmp/temp.mp3'
-        outputfile = '/tmp/output.txt'
+        timedatabase = pd.DataFrame(
+            [],
+            columns=[
+                "path",
+                "oldfilename",
+                "channel",
+                "date",
+                "sec_type",
+                "hour",
+                "minutes",
+                "minutes_plus",
+                "newfilename",
+            ],
+        )
+        bucket = event["bucket"]
+        file_name = event["name"]
+        tmp_main_file_name = "/tmp/temp.mp3"
+        outputfile = "/tmp/output.txt"
         download_blob(bucket, file_name, tmp_main_file_name)
         # soundpath = tmp_main_file_name
-        channel = "tbs"
+        channel = "fuji"
         min_silence_len = 700
         thresh = -45
 
@@ -42,32 +54,58 @@ def first_func(event, context):
         ans = cm_match(tmp_main_file_name)
         print("ans; ", ans)
 
-        with codecs.open(outputfile, 'r', 'utf-8', 'ignore') as f:
+        with codecs.open(outputfile, "r", "utf-8", "ignore") as f:
             rows_to_insert = []
             for line in f:
                 line = line.strip()
                 if line.find("Matched") >= 0:
                     # print(line)
-                    id_ = line.split('.mp3')[1].split('/')[-1]
+                    id_ = line.split(".mp3")[1].split("/")[-1]
                     d_split = file_name.split("_")
 
-                    dt = datetime.datetime(int(d_split[1]), int(d_split[2]), int(
-                        d_split[3]), int(d_split[4]), int(d_split[5].split(".mp3")[0]))
+                    dt = datetime.datetime(
+                        int(d_split[1]),
+                        int(d_split[2]),
+                        int(d_split[3]),
+                        int(d_split[4]),
+                        int(d_split[5].split(".mp3")[0]),
+                    )
 
-                    timegap_ = datetime.timedelta(minutes=(
-                        600 - float(line.split("starting at ")[1].split(" s in")[0].split()[0])) // 60)
+                    timegap_ = datetime.timedelta(
+                        minutes=(
+                            600
+                            - float(
+                                line.split("starting at ")[1]
+                                .split(" s in")[0]
+                                .split()[0]
+                            )
+                        )
+                        // 60
+                    )
                     actual_date = dt - timegap_
 
-                    date = d_split[1]+"-" + d_split[2]+"-" + d_split[3]
-                    time = str(actual_date.hour) + ":" + \
-                        str(actual_date.minute) + ":" + "00"
+                    date = d_split[1] + "-" + d_split[2] + "-" + d_split[3]
+                    time = (
+                        str(actual_date.hour)
+                        + ":"
+                        + str(actual_date.minute)
+                        + ":"
+                        + "00"
+                    )
 
-                    channel = d_split[0]
-                    rank_ = int(line.split('rank ')[1])
+                    channel = "fuji"
+                    rank_ = int(line.split("rank ")[1])
 
                     rows_to_insert.append(
-                        {u"id_": id_, u"date": date, u"time": time, u"channel": channel,
-                            u"rank_": rank_, u"datetime": date+" "+time, u"pklz": pklname}
+                        {
+                            u"id_": id_,
+                            u"date": date,
+                            u"time": time,
+                            u"channel": channel,
+                            u"rank_": rank_,
+                            u"datetime": date + " " + time,
+                            u"pklz": pklname,
+                        }
                     )
 
         # bqへStreamingInsert
@@ -75,8 +113,8 @@ def first_func(event, context):
         if len(rows_to_insert) > 0:
             #            print(ans, channel, origina_file_name,)
 
-            client = bigquery.Client(project='esoteric-helix-261205')
-            table_id = "cm_straming_sample.streaming_tbs_f15"
+            client = bigquery.Client(project="ad-database-321502")
+            table_id = "ad_database.streaming_sandbox"
             # rows_to_insert = [
             #    {u"yid": ans, u"channel": channel, u"date": origina_file_name}
             # ]
@@ -142,10 +180,23 @@ def first_func(event, context):
 
 
 def cm_match(tmp_main_file_name):
-    outputfile = '/tmp/output.txt'
-    l = ['1', 'match', '--dbase', pklname,
-         tmp_main_file_name,
-         "--find-time-range", "--max-matches", "20", "--search-depth", "100", "--min-count", "20", '-o', outputfile]
+    outputfile = "/tmp/output.txt"
+    l = [
+        "1",
+        "match",
+        "--dbase",
+        pklname,
+        tmp_main_file_name,
+        "--find-time-range",
+        "--max-matches",
+        "20",
+        "--search-depth",
+        "100",
+        "--min-count",
+        "20",
+        "-o",
+        outputfile,
+    ]
 
     result = audfprint.main(l)
     return "ok"
@@ -159,8 +210,4 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
     blob = bucket.blob(source_blob_name)
     blob.download_to_filename(destination_file_name)
 
-    print(
-        "Blob {} downloaded to {}.".format(
-            source_blob_name, destination_file_name
-        )
-    )
+    print("Blob {} downloaded to {}.".format(source_blob_name, destination_file_name))
