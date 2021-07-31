@@ -61,7 +61,7 @@ def first_func(event, context):
                 if line.find("Matched") >= 0:
                     # print(line)
                     id_ = line.split(".mp3")[1].split("/")[-1]
-                    d_split = file_name.split("_")
+                    d_split = file_name.split("/")[-1].split("_")
 
                     dt = datetime.datetime(
                         int(d_split[1]),
