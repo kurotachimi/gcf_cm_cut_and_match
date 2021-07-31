@@ -43,9 +43,9 @@ def first_func(event, context):
         outputfile = "/tmp/output.txt"
         download_blob(bucket, file_name, tmp_main_file_name)
         # soundpath = tmp_main_file_name
-        channel = "asahi"
-        min_silence_len = 600
-        thresh = -40
+        channel = "tokyo"
+        min_silence_len = 700
+        thresh = -45
 
         print(file_name)
 
@@ -93,7 +93,7 @@ def first_func(event, context):
                         + "00"
                     )
 
-                    channel = "asahi"
+                    channel = "tokyo"
                     rank_ = int(line.split("rank ")[1])
 
                     rows_to_insert.append(
