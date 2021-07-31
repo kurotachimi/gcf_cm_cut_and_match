@@ -12,6 +12,7 @@ gcloud functions deploy cut_cms_fuji \
 --memory 2048MB \
 --region asia-northeast1 \
 --trigger-resource ad_fuji \
+--timeout 300s\
 --trigger-event google.storage.object.finalize
 
 gcloud functions deploy cut_cms_fuji
