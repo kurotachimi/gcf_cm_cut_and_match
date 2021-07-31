@@ -12,7 +12,7 @@ gcloud functions deploy cut_cms_ntv \
 --memory 2048MB \
 --region asia-northeast1 \
 --trigger-resource ad_ntv \
---timeout 300s\
+--timeout 300s \
 --trigger-event google.storage.object.finalize
 
 gcloud functions deploy cut_cms_ntv
