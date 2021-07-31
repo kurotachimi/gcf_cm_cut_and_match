@@ -116,7 +116,7 @@ def first_func(event, context):
             #            print(ans, channel, origina_file_name,)
 
             client = bigquery.Client(project="ad-database-321502")
-            table_id = "ad_database.streaming_sandbox"
+            table_id = "ad_database.streaming_main"
             # rows_to_insert = [
             #    {u"yid": ans, u"channel": channel, u"date": origina_file_name}
             # ]
