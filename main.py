@@ -9,7 +9,8 @@ import codecs
 
 from google.cloud import bigquery
 
-pklname = "fpdbase_all.pklz"
+
+# pklname = "fpdbase_all.pklz"
 
 
 def first_func(event, context):
@@ -42,6 +43,12 @@ def first_func(event, context):
         tmp_main_file_name = "/tmp/temp.mp3"
         outputfile = "/tmp/output.txt"
         download_blob(bucket, file_name, tmp_main_file_name)
+
+        pk_bucket = "ad_pklz"
+        pklname = "fpdbase_all.pklz"
+        tmp_pklname = "/tmp/tmp.pklz"
+        download_blob(pk_bucket, pklname, tmp_pklname)
+
         # soundpath = tmp_main_file_name
         channel = "asahi"
         min_silence_len = 600
@@ -181,11 +188,12 @@ def first_func(event, context):
 
 def cm_match(tmp_main_file_name):
     outputfile = "/tmp/output.txt"
+    tmp_pklname = "/tmp/tmp.pklz"
     l = [
         "1",
         "match",
         "--dbase",
-        pklname,
+        tmp_pklname,
         tmp_main_file_name,
         "--find-time-range",
         "--max-matches",
